@@ -14,7 +14,9 @@ export default function Home() {
         </VideoText>
       </div> */}
 
-      <HyperText className="mb-6">Devour Evolve</HyperText>
+      <div className="w-[500px] mb-10">
+        <img src="/Devour_Evolve.svg" alt="Devour_Evolve " />
+      </div>
 
       {/* <p className="mb-6 text-center max-w-md">
         点击餐桌上的食物，蟑螂会出来帮你清理它们！
