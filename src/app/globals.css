@@ -1,9 +1,11 @@
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --font-press: "Press Start 2P", sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -41,39 +43,49 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --animate-background-position-spin: background-position-spin 3000ms infinite alternate;
+  --animate-background-position-spin: background-position-spin 3000ms infinite
+    alternate;
   @keyframes background-position-spin {
-  0% {
-    background-position: top center;
+    0% {
+      background-position: top center;
     }
-  100% {
-    background-position: bottom center;
+    100% {
+      background-position: bottom center;
     }
   }
-  --animate-grid: grid 15s linear infinite
-;
+  --animate-grid: grid 15s linear infinite;
   @keyframes grid {
-  0% {
-    transform: translateY(-50%);}
-  100% {
-    transform: translateY(0);}}
+    0% {
+      transform: translateY(-50%);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
   --animate-aurora: aurora 8s ease-in-out infinite alternate;
   @keyframes aurora {
-  0% {
-    background-position: 0% 50%;
-    transform: rotate(-5deg) scale(0.9);}
-  25% {
-    background-position: 50% 100%;
-    transform: rotate(5deg) scale(1.1);}
-  50% {
-    background-position: 100% 50%;
-    transform: rotate(-3deg) scale(0.95);}
-  75% {
-    background-position: 50% 0%;
-    transform: rotate(3deg) scale(1.05);}
-  100% {
-    background-position: 0% 50%;
-    transform: rotate(-5deg) scale(0.9);}}}
+    0% {
+      background-position: 0% 50%;
+      transform: rotate(-5deg) scale(0.9);
+    }
+    25% {
+      background-position: 50% 100%;
+      transform: rotate(5deg) scale(1.1);
+    }
+    50% {
+      background-position: 100% 50%;
+      transform: rotate(-3deg) scale(0.95);
+    }
+    75% {
+      background-position: 50% 0%;
+      transform: rotate(3deg) scale(1.05);
+    }
+    100% {
+      background-position: 0% 50%;
+      transform: rotate(-5deg) scale(0.9);
+    }
+  }
+}
 
 :root {
   --radius: 0.625rem;
@@ -151,4 +163,95 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.pixel {
+  position: relative;
+  width: 10em;
+  height: 5em;
+  float: left;
+  margin: 0 0.625em;
+  outline: solid 0.25em #000;
+  box-shadow: inset 0.313em 0.313em 0 rgba(0, 0, 0, 0.4),
+    inset -0.313em -0.313em 0 rgba(255, 255, 255, 0.4),
+    0 1em 0.625em -0.4em rgba(0, 0, 0, 0.8);
+  transition: linear 0.2s;
+  background: #d34b5b;
+  padding: 0.6em 0 0 0.6em;
+  cursor: pointer;
+}
+
+.pixel:hover {
+  box-shadow: inset 0.313em 0.313em 0 rgba(0, 0, 0, 0.8),
+    inset -0.313em -0.313em 0 rgba(255, 255, 255, 0.6),
+    0 1em 0.625em -0.4em rgba(255, 255, 255, 0.8);
+}
+
+.pixel:before {
+  content: " ";
+  position: absolute;
+  top: -0.25em;
+  left: -0.25em;
+  width: 0.625em;
+  height: 0.625em;
+  background: #1b1b1b;
+  border-bottom: solid 0.25em #000;
+  border-right: solid 0.25em #000;
+}
+
+.pixel:after {
+  content: " ";
+  position: absolute;
+  bottom: -0.25em;
+  right: -0.25em;
+  width: 0.625em;
+  height: 0.625em;
+  background: #1b1b1b;
+  border-top: solid 0.25em #000;
+  border-left: solid 0.25em #000;
+}
+
+.btn {
+  font-size: 1.2em;
+  font-family: "Press Start 2P", cursive;
+
+  padding: 10px 20px;
+  background: #06c1de;
+  border: 0px;
+  position: absolute;
+  box-shadow: inset -4px 2px 1px 1px grey, inset -4px -2px 1px 1px lightgray,
+    inset 4px 0px 1px 1px lightgray;
+}
+
+.btn:hover {
+  cursor: pointer;
+  background-color: #06b6d1;
+}
+
+.btn:active {
+  top: 5px;
+  box-shadow: -4px 2px 1px 1px grey, -4px -2px 1px 1px lightgray,
+    4px 0px 1px 1px lightgray;
+}
+
+.btn::after {
+  content: "";
+  background: black;
+  position: absolute;
+  left: -2.5%;
+  top: 0;
+  width: 105%;
+  height: 100%;
+  z-index: -1;
+}
+
+.btn::before {
+  content: "";
+  background: black;
+  position: absolute;
+  left: 0;
+  top: -5%;
+  width: 100%;
+  height: 113%;
+  z-index: -1;
 }
