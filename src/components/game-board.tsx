@@ -87,10 +87,10 @@ export default function GameBoard() {
           )}
 
           <Image
-            src="/cockroach2.png"
+            src="/zl.png"
             alt="蟑螂"
-            width={80}
-            height={80}
+            width={100}
+            height={100}
             className={cn(
               "absolute top-24 right-4 animate-bounce",
               isGameStarted ? "block" : "hidden",
