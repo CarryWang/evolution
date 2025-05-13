@@ -168,7 +168,7 @@ export default function GameBoard() {
       } else {
         // 如果用户没有代币，显示提示信息
         setTransactionStatus({
-          message: '您的钱包中没有代币，请添加代币或选择随机模式',
+          message: 'No tokens in your wallet. Please add tokens or choose random mode.',
           type: 'info'
         });
         
@@ -184,7 +184,7 @@ export default function GameBoard() {
     } catch (error) {
       console.error('启动游戏失败:', error);
       setTransactionStatus({
-        message: '获取代币信息失败',
+        message: 'Failed to get token information',
         type: 'error'
       });
       
@@ -241,7 +241,7 @@ export default function GameBoard() {
             } else {
               setFoods([]);
               setTransactionStatus({
-                message: '您的钱包中没有代币，请先添加一些代币',
+                message: 'No tokens in your wallet. Please add some tokens.',
                 type: 'info'
               });
               setTimeout(() => {
@@ -267,14 +267,14 @@ export default function GameBoard() {
   const closeTokenAccount = async (tokenAddress: string) => {
     if (!publicKey || !connection || !sendTransaction) {
       setTransactionStatus({
-        message: '钱包未连接',
+        message: 'Wallet not connected',
         type: 'error'
       });
       return false;
     }
 
     setTransactionStatus({
-      message: '正在关闭代币账户...',
+      message: 'Closing token account...',
       type: 'loading'
     });
     
@@ -309,7 +309,7 @@ export default function GameBoard() {
       
       console.log('代币账户关闭成功:', signature);
       setTransactionStatus({
-        message: '代币账户已关闭!',
+        message: 'Token account closed!',
         type: 'success'
       });
       
@@ -326,15 +326,15 @@ export default function GameBoard() {
       console.error('关闭代币账户失败:', error);
       
       // 根据错误类型显示不同的消息
-      let errorMessage = '关闭代币账户失败';
+      let errorMessage = 'Failed to close token account';
       
       if (error instanceof Error) {
         if (error.message.includes('insufficient')) {
-          errorMessage = '余额不足以支付交易费用';
+          errorMessage = 'Insufficient balance for transaction fee';
         } else if (error.message.includes('not empty')) {
-          errorMessage = '代币账户还有余额，无法关闭';
+          errorMessage = 'Token account has balance, cannot close';
         } else if (error.message.includes('rejected')) {
-          errorMessage = '用户拒绝了交易';
+          errorMessage = 'Transaction rejected by user';
         }
       }
       
@@ -429,7 +429,7 @@ export default function GameBoard() {
           {/* 加载中状态 */}
           {isLoading && (
             <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-30">
-              <div className="text-white text-xl">加载中...</div>
+              <div className="text-white text-xl font-mono">LOADING...</div>
             </div>
           )}
           
@@ -439,7 +439,7 @@ export default function GameBoard() {
               ${transactionStatus.type === 'success' ? 'bg-green-600' :
                 transactionStatus.type === 'error' ? 'bg-red-600' : 
                 transactionStatus.type === 'loading' ? 'bg-blue-600' : 'bg-gray-600'} 
-              text-white`}>
+              text-white font-mono`}>
               {transactionStatus.message}
             </div>
           )}
@@ -448,8 +448,8 @@ export default function GameBoard() {
           {connected && publicKey && (
             <button
               onClick={handleDisconnect}
-              className="absolute top-4 right-4 z-10 bg-black/70 text-white px-4 py-2 rounded-full cursor-pointer hover:bg-black/90 transition-colors"
-              title="点击断开连接"
+              className="absolute top-4 right-4 z-10 bg-black/70 text-white px-4 py-2 rounded-full cursor-pointer hover:bg-black/90 transition-colors font-mono"
+              title="Click to disconnect"
             >
               {formatAddress(publicKey.toBase58())}
             </button>
@@ -458,21 +458,21 @@ export default function GameBoard() {
           {/* 断开连接确认对话框 */}
           {showDisconnectConfirm && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/70 z-20">
-              <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full text-center">
-                <h3 className="text-xl font-bold mb-4">断开钱包连接？</h3>
-                <p className="mb-6 text-gray-700">您确定要断开钱包连接吗？断开后游戏将会暂停。</p>
+              <div className="bg-black border-2 border-white p-6 rounded-lg shadow-lg max-w-md w-full text-center">
+                <h3 className="text-xl font-bold mb-4 text-white font-mono tracking-wide">DISCONNECT WALLET?</h3>
+                <p className="mb-6 text-gray-300 font-mono">Are you sure you want to disconnect your wallet? The game will pause.</p>
                 <div className="flex justify-center gap-4">
                   <button
                     onClick={confirmDisconnect}
-                    className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                    className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors font-mono border-2 border-white tracking-wider"
                   >
-                    确认断开
+                    CONFIRM
                   </button>
                   <button
                     onClick={cancelDisconnect}
-                    className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
+                    className="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 transition-colors font-mono border-2 border-white tracking-wider"
                   >
-                    取消
+                    CANCEL
                   </button>
                 </div>
               </div>
@@ -482,22 +482,22 @@ export default function GameBoard() {
           {/* 重新连接钱包提示 */}
           {showReconnectPrompt && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/70 z-20">
-              <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full text-center">
+              <div className="bg-black border-2 border-white p-6 rounded-lg shadow-lg max-w-md w-full text-center">
                 <div className="flex flex-col items-center gap-4">
                   <WalletMultiButton />
                   {connected && (
                     <div className="flex flex-col gap-2">
                       <button
                         onClick={startTokenGame}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-mono border-2 border-white uppercase tracking-widest"
                       >
-                        使用代币玩游戏
+                        PLAY WITH TOKENS
                       </button>
                       <button
                         onClick={startRandomGame}
-                        className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                        className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors font-mono border-2 border-white uppercase tracking-widest"
                       >
-                        使用随机食物玩游戏
+                        PLAY WITH FOOD
                       </button>
                     </div>
                   )}
@@ -515,15 +515,15 @@ export default function GameBoard() {
                   <div className="flex flex-col gap-3">
                     <button
                       onClick={startTokenGame}
-                      className="px-6 py-3 text-lg font-bold text-white bg-blue-600 rounded-full hover:bg-blue-700 transition-colors"
+                      className="px-6 py-3 text-lg font-bold text-white bg-black rounded-lg hover:bg-gray-800 transition-colors font-mono border-2 border-white uppercase tracking-widest"
                     >
-                      使用代币玩游戏
+                      PLAY WITH TOKENS
                     </button>
                     <button
                       onClick={startRandomGame}
-                      className="px-6 py-3 text-lg font-bold text-white bg-green-600 rounded-full hover:bg-green-700 transition-colors"
+                      className="px-6 py-3 text-lg font-bold text-white bg-black rounded-lg hover:bg-gray-800 transition-colors font-mono border-2 border-white uppercase tracking-widest"
                     >
-                      使用随机食物玩游戏
+                      PLAY WITH FOOD
                     </button>
                   </div>
                 )}
@@ -540,15 +540,6 @@ export default function GameBoard() {
             />
           ))}
 
-          {/* 游戏说明 */}
-          {isGameStarted && (
-            <div className="absolute bottom-4 left-4 bg-black/70 text-white px-4 py-2 rounded-full text-sm">
-              {gameMode === 'token' 
-                ? '点击你的代币让蟑螂吃掉它们！每吃掉一个代币将关闭其代币账户。' 
-                : '点击食物让蟑螂吃掉它们！吃完所有食物后将自动生成新的食物。'}
-            </div>
-          )}
-
           {/* 回到模式选择按钮 */}
           {isGameStarted && (
             <button
@@ -557,15 +548,15 @@ export default function GameBoard() {
                 setGameMode(null);
                 setFoods([]);
               }}
-              className="absolute bottom-4 right-4 bg-black/70 text-white px-4 py-2 rounded-full text-sm hover:bg-black/90 transition-colors"
+              className="absolute bottom-4 right-4 bg-black text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-800 transition-colors font-mono border-2 border-white uppercase tracking-widest"
             >
-              切换游戏模式
+              SWITCH MODE
             </button>
           )}
 
           <Image
             src="/zl.png"
-            alt="蟑螂"
+            alt="Cockroach"
             width={100}
             height={100}
             className={cn(
