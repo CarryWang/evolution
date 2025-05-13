@@ -26,6 +26,7 @@ export default function GameBoard() {
   const [tokenAccounts, setTokenAccounts] = useState<TokenAccount[]>([]);
   const { setVisible } = useWalletModal();
   const [isEating, setIsEating] = useState<boolean>(false);
+  const [gameMode, setGameMode] = useState<'token' | 'random' | null>(null);
 
   // 格式化钱包地址显示
   const formatAddress = (address: string) => {
@@ -148,9 +149,10 @@ export default function GameBoard() {
   };
 
   // 开始游戏，使用代币作为食物
-  const startGame = async () => {
+  const startTokenGame = async () => {
     if (!connected) return; // 确保钱包已连接
     
+    setGameMode('token'); // 设置游戏模式为代币模式
     setIsLoading(true);
     
     try {
@@ -166,7 +168,7 @@ export default function GameBoard() {
       } else {
         // 如果用户没有代币，显示提示信息
         setTransactionStatus({
-          message: '您的钱包中没有代币，请先添加一些代币',
+          message: '您的钱包中没有代币，请添加代币或选择随机模式',
           type: 'info'
         });
         
@@ -195,6 +197,31 @@ export default function GameBoard() {
     }
   };
 
+  // 开始游戏，使用随机食物
+  const startRandomGame = () => {
+    setGameMode('random'); // 设置游戏模式为随机模式
+    setIsLoading(true);
+    
+    try {
+      // 生成10个随机食物
+      const randomFoods = generateRandomFoods(10);
+      setFoods(randomFoods);
+      setIsGameStarted(true);
+    } catch (error) {
+      console.error('生成随机食物失败:', error);
+      setTransactionStatus({
+        message: '生成随机食物失败',
+        type: 'error'
+      });
+      
+      setTimeout(() => {
+        setTransactionStatus(null);
+      }, 3000);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // 当钱包连接状态变化时及时刷新代币信息
   useEffect(() => {
     // 每次连接状态变化时记录日志
@@ -207,7 +234,7 @@ export default function GameBoard() {
         if (success) {
           console.log(`成功获取到 ${tokenAccounts.length} 个代币账户`);
           // 如果之前已经开始游戏，使用新的代币信息更新游戏
-          if (isGameStarted) {
+          if (isGameStarted && gameMode === 'token') {
             if (tokenAccounts.length > 0) {
               const gameFoods = generateTokenFoods(tokenAccounts, tokenAccounts.length);
               setFoods(gameFoods);
@@ -230,10 +257,11 @@ export default function GameBoard() {
     } else {
       // 断开连接时重置状态
       setIsGameStarted(false);
+      setGameMode(null);
       setFoods([]);
       setTokenAccounts([]);
     }
-  }, [connected, isGameStarted]); // 依赖 connected 和 isGameStarted
+  }, [connected, isGameStarted, gameMode]); // 依赖 connected, isGameStarted 和 gameMode
 
   // 关闭代币账户
   const closeTokenAccount = async (tokenAddress: string) => {
@@ -343,7 +371,7 @@ export default function GameBoard() {
     );
     
     // 如果是代币食物，关闭代币账户
-    if ('mint' in clickedFood) {
+    if ('mint' in clickedFood && gameMode === 'token') {
       const success = await closeTokenAccount(clickedFood.address);
       
       if (success) {
@@ -373,13 +401,23 @@ export default function GameBoard() {
         setIsEating(false); // 显示蟑螂
       }
     } else {
-      // 如果不是代币食物，只是吃掉它
+      // 如果不是代币食物或处于随机模式，只是吃掉它
       setTimeout(() => {
-        setFoods(prev => prev.filter(food => food.id !== foodId));
+        setFoods(prevFoods => {
+          const remainingFoods = prevFoods.filter(foodItem => foodItem.id !== foodId);
+          
+          // 如果是随机模式且所有食物都被吃光了，重新生成食物
+          if (gameMode === 'random' && remainingFoods.length === 0) {
+            const newRandomFoods = generateRandomFoods(10);
+            return newRandomFoods;
+          }
+          
+          return remainingFoods;
+        });
         setIsEating(false); // 显示蟑螂
       }, 1500);
     }
-  }, [foods, tokenAccounts]);
+  }, [foods, tokenAccounts, gameMode]);
 
   return (
     <NeonGradientCard className="max-w-6xl" borderSize={10}>
@@ -448,12 +486,20 @@ export default function GameBoard() {
                 <div className="flex flex-col items-center gap-4">
                   <WalletMultiButton />
                   {connected && (
-                    <button
-                      onClick={startGame}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                    >
-                      开始游戏
-                    </button>
+                    <div className="flex flex-col gap-2">
+                      <button
+                        onClick={startTokenGame}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                      >
+                        使用代币玩游戏
+                      </button>
+                      <button
+                        onClick={startRandomGame}
+                        className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                      >
+                        使用随机食物玩游戏
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
@@ -466,12 +512,20 @@ export default function GameBoard() {
               <div className="flex flex-col items-center gap-4">
                 <WalletMultiButton />
                 {connected && (
-                  <button
-                    onClick={startGame}
-                    className="px-6 py-3 text-lg font-bold text-white bg-red-600 rounded-full hover:bg-red-700 transition-colors"
-                  >
-                    开始游戏
-                  </button>
+                  <div className="flex flex-col gap-3">
+                    <button
+                      onClick={startTokenGame}
+                      className="px-6 py-3 text-lg font-bold text-white bg-blue-600 rounded-full hover:bg-blue-700 transition-colors"
+                    >
+                      使用代币玩游戏
+                    </button>
+                    <button
+                      onClick={startRandomGame}
+                      className="px-6 py-3 text-lg font-bold text-white bg-green-600 rounded-full hover:bg-green-700 transition-colors"
+                    >
+                      使用随机食物玩游戏
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
@@ -489,8 +543,24 @@ export default function GameBoard() {
           {/* 游戏说明 */}
           {isGameStarted && (
             <div className="absolute bottom-4 left-4 bg-black/70 text-white px-4 py-2 rounded-full text-sm">
-              点击你的代币让蟑螂吃掉它们！每吃掉一个代币将关闭其代币账户。
+              {gameMode === 'token' 
+                ? '点击你的代币让蟑螂吃掉它们！每吃掉一个代币将关闭其代币账户。' 
+                : '点击食物让蟑螂吃掉它们！吃完所有食物后将自动生成新的食物。'}
             </div>
+          )}
+
+          {/* 回到模式选择按钮 */}
+          {isGameStarted && (
+            <button
+              onClick={() => {
+                setIsGameStarted(false);
+                setGameMode(null);
+                setFoods([]);
+              }}
+              className="absolute bottom-4 right-4 bg-black/70 text-white px-4 py-2 rounded-full text-sm hover:bg-black/90 transition-colors"
+            >
+              切换游戏模式
+            </button>
           )}
 
           <Image
