@@ -77,7 +77,7 @@ export default function FoodItem({ food, onClick }: FoodItemProps) {
       {isTokenFood(food) && (
         <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 bg-black/70 text-white text-xs px-2 py-0.5 rounded-full whitespace-nowrap font-mono uppercase tracking-wider">
           {food.tokenName}
-          {!food.isBeingEaten && <span className="ml-1 text-xs text-green-400">CLICK TO CLOSE</span>}
+          {/* {!food.isBeingEaten && <span className="ml-1 text-xs text-green-400">CLICK TO CLOSE</span>} */}
         </div>
       )}
 
