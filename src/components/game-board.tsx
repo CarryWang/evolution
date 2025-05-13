@@ -11,6 +11,8 @@ import { fetchTokenAccounts, TokenAccount } from "@/lib/token-utils";
 import type { Food, TokenFood } from "@/lib/types";
 import { NeonGradientCard } from "./magicui/neon-gradient-card";
 import { useWalletModal } from '@solana/wallet-adapter-react-ui';
+import Image from 'next/image';
+import { cn } from "@/lib/utils";
 
 export default function GameBoard() {
   const [foods, setFoods] = useState<(Food | TokenFood)[]>([]);
@@ -23,6 +25,7 @@ export default function GameBoard() {
   const [showReconnectPrompt, setShowReconnectPrompt] = useState(false);
   const [tokenAccounts, setTokenAccounts] = useState<TokenAccount[]>([]);
   const { setVisible } = useWalletModal();
+  const [isEating, setIsEating] = useState<boolean>(false);
 
   // 格式化钱包地址显示
   const formatAddress = (address: string) => {
@@ -327,6 +330,9 @@ export default function GameBoard() {
     const clickedFood = foods.find(food => food.id === foodId);
     if (!clickedFood) return;
     
+    // 设置吃东西状态，隐藏蟑螂（因为它正在移动到食物位置）
+    setIsEating(true);
+    
     // 将食物设为被吃状态
     setFoods(prev => 
       prev.map(food => 
@@ -342,16 +348,17 @@ export default function GameBoard() {
       
       if (success) {
         // 关闭成功后，根据最新的tokenAccounts重新生成食物
-        // 注意这里不需要额外调用fetchUserTokens，因为closeTokenAccount内部已经调用了
         if (tokenAccounts.length > 0) {
           const updatedFoods = generateTokenFoods(tokenAccounts, tokenAccounts.length);
           setTimeout(() => {
             setFoods(updatedFoods);
+            setIsEating(false); // 显示蟑螂
           }, 1500);
         } else {
           // 如果没有代币了，显示空列表
           setTimeout(() => {
             setFoods([]);
+            setIsEating(false); // 显示蟑螂
           }, 1500);
         }
       } else {
@@ -363,11 +370,13 @@ export default function GameBoard() {
               : food
           )
         );
+        setIsEating(false); // 显示蟑螂
       }
     } else {
       // 如果不是代币食物，只是吃掉它
       setTimeout(() => {
         setFoods(prev => prev.filter(food => food.id !== foodId));
+        setIsEating(false); // 显示蟑螂
       }, 1500);
     }
   }, [foods, tokenAccounts]);
@@ -483,6 +492,18 @@ export default function GameBoard() {
               点击你的代币让蟑螂吃掉它们！每吃掉一个代币将关闭其代币账户。
             </div>
           )}
+
+          <Image
+            src="/zl.png"
+            alt="蟑螂"
+            width={100}
+            height={100}
+            className={cn(
+              "absolute top-24 right-4 animate-bounce",
+              isGameStarted ? "block" : "hidden",
+              isEating && "hidden"
+            )}
+          />
         </div>
       </div>
     </NeonGradientCard>

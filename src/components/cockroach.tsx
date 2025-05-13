@@ -39,7 +39,7 @@ export default function Cockroach({ foodSize }: CockroachProps) {
       }}
     >
       <Image
-        src="/cockroach2.png"
+        src="/zl.png"
         alt="蟑螂"
         width={cockroachSize}
         height={cockroachSize}
