@@ -1,8 +1,5 @@
 import GameBoard from "@/components/game-board";
-import { AuroraText } from "@/components/magicui/aurora-text";
-import { HyperText } from "@/components/magicui/hyper-text";
 import { RetroGrid } from "@/components/magicui/retro-grid";
-import { VideoText } from "@/components/magicui/video-text";
 
 export default function Home() {
   return (
